@@ -8,7 +8,7 @@ Set the following parameters in `fake_planner.launch`:
   - `cmd_vel_topic (default: "/cmd_vel")`: Topic where velocity commands should be published
   - `max_velocity_service (default: "set_max_velocity")`: Name where service should be advertised to set maximum travel velocity
   - `linear_tolerance (default: 0.1)`: Tolerance for linear displacement between the bot and the goal (m)
-  - `angular_tolerance (default: 0.1)`: Tolerance for angular displacement between the bot and the goal (rad)
+  - `angular_tolerance (default: 0.35)`: Tolerance for angular displacement between the bot and the goal (rad)
   - `time_to_x (default: 0.5)`: Time it would take to reach the goal if the max velocity permits. Used for scaling linear velocity.
   - `time_to_angle (default: 1.0)`: Time it would take to reach the goal if the max velocity permits. Used for scaling angular velocity.
   - `max_linear_speed (default: 1.0)`: Maximum linear speed (m/s)

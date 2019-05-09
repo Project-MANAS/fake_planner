@@ -20,8 +20,8 @@ FakePlanner::FakePlanner() : private_nh_("~"), tf_listener_(tf_buffer_) {
   private_nh_.param<std::string>("max_velocity_service", max_vel_service_name_, "set_max_velocity");
   private_nh_.param("max_angular_speed", max_angular_speed_, 0.25);
   private_nh_.param("max_linear_speed", max_linear_speed_, 0.5);
-  private_nh_.param("linear_threshold", linear_tolerance_, 0.1);
-  private_nh_.param("angular_threshold", angular_tolerance_, 0.01);
+  private_nh_.param("linear_tolerance", linear_tolerance_, 0.1);
+  private_nh_.param("angular_tolerance", angular_tolerance_, 0.35);
   private_nh_.param("time_to_x", time_to_x_, 1.0);
   private_nh_.param("time_to_angle", time_to_angle_, 1.0);
 
@@ -52,7 +52,7 @@ void FakePlanner::run() {
   geometry_msgs::PoseStamped goal_tf;
   geometry_msgs::TransformStamped transform;
 
-  ros::Rate rate(20);
+  ros::Rate rate(10);
 
   while (ros::ok()) {
 
@@ -60,42 +60,46 @@ void FakePlanner::run() {
 
     if (is_goal_set_) {
 
-      transform = tf_buffer_.lookupTransform("base_link", goal_.header.frame_id, ros::Time(0), ros::Duration(1.0));
-      tf2::doTransform(goal_, goal_tf, transform);
+      try {
 
-      tf_buffer_.transform(goal_, goal_tf, "base_link");
+        transform = tf_buffer_.lookupTransform("base_link", goal_.header.frame_id, ros::Time(0), ros::Duration(1.0));
 
-      auto displacement = euclideanDistance(goal_tf.pose.position.x,
-                                            goal_tf.pose.position.y);
+        tf2::doTransform(goal_, goal_tf, transform);
 
-      auto theta = atan2(goal_tf.pose.position.y,
-                         goal_tf.pose.position.x);
+        auto displacement = euclideanDistance(goal_tf.pose.position.x,
+                                              goal_tf.pose.position.y);
 
-      ROS_INFO("Displacement: %lf\tTheta: %lf", displacement, theta);
+        auto theta = atan2(goal_tf.pose.position.y,
+                           goal_tf.pose.position.x);
 
-      if (abs(theta) > angular_tolerance_) {
+        ROS_INFO("Displacement: %lf\tTheta: %lf", displacement, theta);
 
-        auto angular_speed = theta / time_to_angle_;
+        if (abs(theta) > angular_tolerance_) {
 
-        angular_speed = copysign(fmax(0.0, fmin(max_angular_speed_, abs(angular_speed))), angular_speed);
+          auto angular_speed = theta / time_to_angle_;
 
-        move_cmd.angular.z = angular_speed;
+          angular_speed = copysign(fmax(0.0, fmin(max_angular_speed_, abs(angular_speed))), angular_speed);
 
-      } else if (displacement > linear_tolerance_) {
+          move_cmd.angular.z = angular_speed;
 
-        auto linear_speed = displacement / time_to_x_;
+        } else if (displacement > linear_tolerance_) {
 
-        auto angular_speed = theta / time_to_angle_;
+          auto linear_speed = displacement / time_to_x_;
 
-        linear_speed = copysign(fmax(0.0, fmin(max_linear_speed_, abs(linear_speed))), linear_speed);
-        angular_speed = copysign(fmax(0.0, fmin(max_angular_speed_, abs(angular_speed))), angular_speed);
+          auto angular_speed = theta / time_to_angle_;
 
-        move_cmd.linear.x = linear_speed;
-        move_cmd.angular.z = angular_speed;
+          linear_speed = copysign(fmax(0.0, fmin(max_linear_speed_, abs(linear_speed))), linear_speed);
+          angular_speed = copysign(fmax(0.0, fmin(max_angular_speed_, abs(angular_speed))), angular_speed);
 
-      } else {
-        ROS_INFO("Goal reached!");
-        is_goal_set_ = false;
+          move_cmd.linear.x = linear_speed;
+          move_cmd.angular.z = angular_speed;
+
+        } else {
+          ROS_INFO("Goal reached!");
+          is_goal_set_ = false;
+        }
+      } catch (tf2::TransformException &e) {
+        ROS_WARN("%s", e.what());
       }
     }
 

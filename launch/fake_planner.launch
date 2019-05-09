@@ -4,7 +4,7 @@
         <param name="cmd_vel_topic" value="/cmd_vel"/>
         <param name="max_velocity_service" value="set_max_velocity"/>
         <param name="linear_tolerance" value="0.1"/>
-        <param name="angular_tolerance" value="0.1"/>
+        <param name="angular_tolerance" value="0.35"/>
         <param name="time_to_x" value="0.5"/>
         <param name="time_to_angle" value="0.5"/>
         <param name="max_linear_speed" value="1.0"/>
