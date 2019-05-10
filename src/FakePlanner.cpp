@@ -8,6 +8,7 @@
 
 #include <fake_planner/SetMaxVel.h>
 
+#include <std_msgs/Bool.h>
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Odometry.h>
@@ -17,6 +18,7 @@
 FakePlanner::FakePlanner() : private_nh_("~"), tf_listener_(tf_buffer_) {
   private_nh_.param<std::string>("goal_topic", goal_topic_, "goal");
   private_nh_.param<std::string>("cmd_vel_topic", cmd_topic_, "cmd_vel");
+  private_nh_.param<std::string>("goal_reached_topic", goal_reached_topic_, "goal_reached");
   private_nh_.param<std::string>("max_velocity_service", max_vel_service_name_, "set_max_velocity");
   private_nh_.param("max_angular_speed", max_angular_speed_, 0.25);
   private_nh_.param("max_linear_speed", max_linear_speed_, 0.5);
@@ -28,6 +30,7 @@ FakePlanner::FakePlanner() : private_nh_("~"), tf_listener_(tf_buffer_) {
   is_goal_set_ = false;
 
   cmd_pub_ = nh_.advertise<geometry_msgs::Twist>(cmd_topic_, 1);
+  goal_reached_pub_ = nh_.advertise<std_msgs::Bool>(goal_reached_topic_, 1);
 
   max_vel_server_ = private_nh_.advertiseService(max_vel_service_name_, &FakePlanner::setMaxVelocity, this);
 
@@ -97,6 +100,9 @@ void FakePlanner::run() {
         } else {
           ROS_INFO("Goal reached!");
           is_goal_set_ = false;
+          std_msgs::Bool msg;
+          msg.data = (u_char) true;
+          goal_reached_pub_.publish(msg);
         }
       } catch (tf2::TransformException &e) {
         ROS_WARN("%s", e.what());

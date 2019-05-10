@@ -5,6 +5,7 @@ set(CMAKE_CXX_FLAGS "-std=c++17 -fPIC")
 
 find_package(catkin REQUIRED COMPONENTS
         roscpp
+        std_msgs
         geometry_msgs
         nav_msgs
         tf2
@@ -25,6 +26,7 @@ generate_messages(
 
 catkin_package(CATKIN_DEPENDS
         roscpp
+        std_msgs
         geometry_msgs
         nav_msgs
         tf2

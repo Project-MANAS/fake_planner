@@ -2,6 +2,7 @@
     <node type="fake_planner" name="fake_planner" pkg="fake_planner" output="screen">
         <param name="goal_topic" value="move_base_simple/goal"/>
         <param name="cmd_vel_topic" value="/cmd_vel"/>
+        <param name="goal_reached_topic" value="/goal_reached"/>
         <param name="max_velocity_service" value="set_max_velocity"/>
         <param name="linear_tolerance" value="0.1"/>
         <param name="angular_tolerance" value="0.35"/>

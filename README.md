@@ -5,7 +5,8 @@ ROS package for basic navigation to a goal without obstacle avoidance.
 ### Usage
 Set the following parameters in `fake_planner.launch`:
   - `goal_topic (default: "move_base_simple/goal")`: Topic where goals are published (type: *geometry_msgs/PoseStamped*)
-  - `cmd_vel_topic (default: "/cmd_vel")`: Topic where velocity commands should be published
+  - `cmd_vel_topic (default: "/cmd_vel")`: Topic where velocity commands should be published (type: *geometry_msgs/Twist*)
+  - `goal_reached_topic (default: "/goal_reached")`: Topic where status messages are published to inform that current goal was reached (type: *std_msgs/Bool*)
   - `max_velocity_service (default: "set_max_velocity")`: Name where service should be advertised to set maximum travel velocity
   - `linear_tolerance (default: 0.1)`: Tolerance for linear displacement between the bot and the goal (m)
   - `angular_tolerance (default: 0.35)`: Tolerance for angular displacement between the bot and the goal (rad)

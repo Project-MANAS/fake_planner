@@ -7,6 +7,7 @@
 
 #include <ros/ros.h>
 
+#include <std_msgs/Bool.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Odometry.h>
@@ -35,6 +36,7 @@ class FakePlanner {
   ros::NodeHandle private_nh_;
 
   ros::Publisher cmd_pub_;
+  ros::Publisher goal_reached_pub_;
 
   ros::Subscriber goal_sub_;
 
@@ -53,6 +55,7 @@ class FakePlanner {
 
   std::string goal_topic_;
   std::string cmd_topic_;
+  std::string goal_reached_topic_;
   std::string max_vel_service_name_;
 
   geometry_msgs::PoseStamped goal_;
